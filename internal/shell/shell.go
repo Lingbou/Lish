@@ -81,25 +81,35 @@ func (s *Shell) Init() error {
 // registerCommands 注册所有内置命令
 func (s *Shell) registerCommands() error {
 	cmds := []commands.Command{
+		// 文件浏览
 		commands.NewPwdCommand(s.stdout),
 		commands.NewCdCommand(),
 		commands.NewLsCommand(s.stdout),
+		
+		// 文件操作
 		commands.NewCatCommand(s.stdout),
 		commands.NewMkdirCommand(),
 		commands.NewRmCommand(),
 		commands.NewTouchCommand(),
+		commands.NewCpCommand(s.stdout),      // v0.2.0 新增
+		commands.NewMvCommand(s.stdout),      // v0.2.0 新增
+		
+		// 文本处理
+		commands.NewGrepCommand(s.stdout, os.Stdin), // v0.2.0 新增
+		
+		// 系统命令
 		commands.NewEchoCommand(s.stdout),
 		commands.NewClearCommand(s.stdout),
 		commands.NewExitCommand(),
 		commands.NewHelpCommand(s.registry, s.stdout),
 	}
-
+	
 	for _, cmd := range cmds {
 		if err := s.registry.Register(cmd); err != nil {
 			return err
 		}
 	}
-
+	
 	return nil
 }
 
