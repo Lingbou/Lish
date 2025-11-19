@@ -1,0 +1,45 @@
+{
+    "$schema": "https://aka.ms/terminal-profiles-schema",
+    "profiles": {
+        "list": [
+            {
+                "guid": "{12345678-1234-1234-1234-123456789abc}",
+                "name": "Lish",
+                "commandline": "C:\\path\\to\\lish.exe",
+                "startingDirectory": "%USERPROFILE%",
+                "icon": "🐚",
+                "colorScheme": "One Half Dark",
+                "fontFace": "Cascadia Code",
+                "fontSize": 10,
+                "cursorShape": "bar",
+                "antialiasingMode": "grayscale"
+            }
+        ]
+    },
+    "schemes": [
+        {
+            "name": "Lish Dark",
+            "black": "#282c34",
+            "red": "#e06c75",
+            "green": "#98c379",
+            "yellow": "#e5c07b",
+            "blue": "#61afef",
+            "purple": "#c678dd",
+            "cyan": "#56b6c2",
+            "white": "#dcdfe4",
+            "brightBlack": "#5c6370",
+            "brightRed": "#e06c75",
+            "brightGreen": "#98c379",
+            "brightYellow": "#e5c07b",
+            "brightBlue": "#61afef",
+            "brightPurple": "#c678dd",
+            "brightCyan": "#56b6c2",
+            "brightWhite": "#ffffff",
+            "background": "#282c34",
+            "foreground": "#dcdfe4",
+            "selectionBackground": "#3e4451",
+            "cursorColor": "#528bff"
+        }
+    ]
+}
+
