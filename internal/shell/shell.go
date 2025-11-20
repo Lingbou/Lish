@@ -85,21 +85,28 @@ func (s *Shell) registerCommands() error {
 		commands.NewPwdCommand(s.stdout),
 		commands.NewCdCommand(),
 		commands.NewLsCommand(s.stdout),
+		commands.NewFindCommand(s.stdout),           // v0.2.0 新增
 		
 		// 文件操作
 		commands.NewCatCommand(s.stdout),
 		commands.NewMkdirCommand(),
 		commands.NewRmCommand(),
 		commands.NewTouchCommand(),
-		commands.NewCpCommand(s.stdout),      // v0.2.0 新增
-		commands.NewMvCommand(s.stdout),      // v0.2.0 新增
+		commands.NewCpCommand(s.stdout),             // v0.2.0 新增
+		commands.NewMvCommand(s.stdout),             // v0.2.0 新增
 		
 		// 文本处理
 		commands.NewGrepCommand(s.stdout, os.Stdin), // v0.2.0 新增
+		commands.NewHeadCommand(s.stdout),           // v0.2.0 新增
+		commands.NewTailCommand(s.stdout),           // v0.2.0 新增
+		commands.NewWcCommand(s.stdout),             // v0.2.0 新增
 		
 		// 系统命令
 		commands.NewEchoCommand(s.stdout),
 		commands.NewClearCommand(s.stdout),
+		commands.NewEnvCommand(s.stdout),            // v0.2.0 新增
+		commands.NewWhichCommand(s.stdout, s.registry), // v0.2.0 新增
+		commands.NewHistoryCommand(s.stdout),        // v0.2.0 新增
 		commands.NewExitCommand(),
 		commands.NewHelpCommand(s.registry, s.stdout),
 	}
