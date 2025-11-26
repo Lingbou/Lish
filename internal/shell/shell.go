@@ -8,9 +8,11 @@ import (
 	"os/user"
 	"path/filepath"
 	"strings"
+	"time"
 
 	"github.com/Lingbou/Lish/internal/commands"
 	"github.com/Lingbou/Lish/internal/completer"
+	"github.com/Lingbou/Lish/internal/config"
 	"github.com/Lingbou/Lish/internal/history"
 	"github.com/Lingbou/Lish/internal/parser"
 	"github.com/chzyer/readline"
@@ -20,6 +22,7 @@ import (
 type Shell struct {
 	registry *commands.Registry
 	history  *history.Manager
+	config   *config.Config
 	rl       *readline.Instance
 	stdout   *os.File
 	stderr   *os.File
@@ -27,6 +30,12 @@ type Shell struct {
 
 // NewShell 创建新的 Shell 实例
 func NewShell() (*Shell, error) {
+	// 加载配置
+	cfg, err := config.Load()
+	if err != nil {
+		return nil, fmt.Errorf("加载配置失败: %w", err)
+	}
+
 	// 创建命令注册表
 	registry := commands.NewRegistry()
 
@@ -39,6 +48,7 @@ func NewShell() (*Shell, error) {
 	return &Shell{
 		registry: registry,
 		history:  histMgr,
+		config:   cfg,
 		stdout:   os.Stdout,
 		stderr:   os.Stderr,
 	}, nil
@@ -85,38 +95,49 @@ func (s *Shell) registerCommands() error {
 		commands.NewPwdCommand(s.stdout),
 		commands.NewCdCommand(),
 		commands.NewLsCommand(s.stdout),
-		commands.NewFindCommand(s.stdout),           // v0.2.0 新增
-		
+		commands.NewFindCommand(s.stdout),
+		commands.NewTreeCommand(s.stdout), // v0.3.0 新增
+
 		// 文件操作
 		commands.NewCatCommand(s.stdout),
 		commands.NewMkdirCommand(),
 		commands.NewRmCommand(),
 		commands.NewTouchCommand(),
-		commands.NewCpCommand(s.stdout),             // v0.2.0 新增
-		commands.NewMvCommand(s.stdout),             // v0.2.0 新增
-		
+		commands.NewCpCommand(s.stdout),
+		commands.NewMvCommand(s.stdout),
+		commands.NewDiffCommand(s.stdout), // v0.3.0 新增
+
 		// 文本处理
-		commands.NewGrepCommand(s.stdout, os.Stdin), // v0.2.0 新增
-		commands.NewHeadCommand(s.stdout),           // v0.2.0 新增
-		commands.NewTailCommand(s.stdout),           // v0.2.0 新增
-		commands.NewWcCommand(s.stdout),             // v0.2.0 新增
-		
+		commands.NewGrepCommand(s.stdout, os.Stdin),
+		commands.NewHeadCommand(s.stdout),
+		commands.NewTailCommand(s.stdout),
+		commands.NewWcCommand(s.stdout),
+
 		// 系统命令
 		commands.NewEchoCommand(s.stdout),
 		commands.NewClearCommand(s.stdout),
-		commands.NewEnvCommand(s.stdout),            // v0.2.0 新增
-		commands.NewWhichCommand(s.stdout, s.registry), // v0.2.0 新增
-		commands.NewHistoryCommand(s.stdout),        // v0.2.0 新增
+		commands.NewEnvCommand(s.stdout),
+		commands.NewWhichCommand(s.stdout, s.registry),
+		commands.NewHistoryCommand(s.stdout),
+		commands.NewPsCommand(s.stdout),   // v0.3.0 新增
+		commands.NewKillCommand(s.stdout), // v0.3.0 新增
+		commands.NewDuCommand(s.stdout),   // v0.3.0 新增
+		commands.NewDateCommand(s.stdout), // v0.3.0 新增
+
+		// 配置和别名
+		commands.NewAliasCommand(s.stdout, s.config),   // v0.3.0 新增
+		commands.NewUnaliasCommand(s.stdout, s.config), // v0.3.0 新增
+
 		commands.NewExitCommand(),
 		commands.NewHelpCommand(s.registry, s.stdout),
 	}
-	
+
 	for _, cmd := range cmds {
 		if err := s.registry.Register(cmd); err != nil {
 			return err
 		}
 	}
-	
+
 	return nil
 }
 
@@ -147,10 +168,13 @@ func (s *Shell) Run() error {
 			return fmt.Errorf("读取输入失败: %w", err)
 		}
 
+		// 展开别名
+		line = s.expandAlias(line)
+
 		// 解析命令
 		parsed, err := parser.Parse(line)
 		if err != nil {
-			fmt.Fprintf(s.stderr, "解析错误: %v\n", err)
+			fmt.Fprintf(s.stderr, "❌ 解析错误: %v\n", err)
 			continue
 		}
 
@@ -158,9 +182,23 @@ func (s *Shell) Run() error {
 			continue
 		}
 
+		// 记录开始时间
+		startTime := time.Now()
+
 		// 执行命令
-		if err := s.executeCommand(ctx, parsed); err != nil {
-			fmt.Fprintf(s.stderr, "错误: %v\n", err)
+		execErr := s.executeCommand(ctx, parsed)
+
+		// 计算执行时间
+		duration := time.Since(startTime)
+
+		// 显示错误
+		if execErr != nil {
+			fmt.Fprintf(s.stderr, "❌ 错误: %v\n", execErr)
+		}
+
+		// 显示执行时间（如果超过 100ms）
+		if duration > 100*time.Millisecond {
+			fmt.Fprintf(s.stderr, "⏱️  执行时间: %s\n", formatDuration(duration))
 		}
 	}
 
