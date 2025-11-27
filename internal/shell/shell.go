@@ -20,12 +20,13 @@ import (
 
 // Shell Lish Shell 结构
 type Shell struct {
-	registry *commands.Registry
-	history  *history.Manager
-	config   *config.Config
-	rl       *readline.Instance
-	stdout   *os.File
-	stderr   *os.File
+	registry  *commands.Registry
+	history   *history.Manager
+	config    *config.Config
+	suggester *Suggester
+	rl        *readline.Instance
+	stdout    *os.File
+	stderr    *os.File
 }
 
 // NewShell 创建新的 Shell 实例
@@ -46,11 +47,12 @@ func NewShell() (*Shell, error) {
 	}
 
 	return &Shell{
-		registry: registry,
-		history:  histMgr,
-		config:   cfg,
-		stdout:   os.Stdout,
-		stderr:   os.Stderr,
+		registry:  registry,
+		history:   histMgr,
+		config:    cfg,
+		suggester: NewSuggester(),
+		stdout:    os.Stdout,
+		stderr:    os.Stderr,
 	}, nil
 }
 
@@ -125,8 +127,16 @@ func (s *Shell) registerCommands() error {
 		commands.NewDateCommand(s.stdout), // v0.3.0 新增
 
 		// 配置和别名
-		commands.NewAliasCommand(s.stdout, s.config),   // v0.3.0 新增
-		commands.NewUnaliasCommand(s.stdout, s.config), // v0.3.0 新增
+		commands.NewAliasCommand(s.stdout, s.config),
+		commands.NewUnaliasCommand(s.stdout, s.config),
+
+		// 网络命令
+		commands.NewCurlCommand(s.stdout), // v0.4.0 新增
+		commands.NewPingCommand(s.stdout), // v0.4.0 新增
+
+		// 压缩命令
+		commands.NewZipCommand(s.stdout),   // v0.4.0 新增
+		commands.NewUnzipCommand(s.stdout), // v0.4.0 新增
 
 		commands.NewExitCommand(),
 		commands.NewHelpCommand(s.registry, s.stdout),
@@ -168,6 +178,9 @@ func (s *Shell) Run() error {
 			return fmt.Errorf("读取输入失败: %w", err)
 		}
 
+		// 添加到历史（用于智能建议）
+		s.suggester.AddToHistory(line)
+
 		// 展开别名
 		line = s.expandAlias(line)
 
@@ -191,9 +204,16 @@ func (s *Shell) Run() error {
 		// 计算执行时间
 		duration := time.Since(startTime)
 
-		// 显示错误
+		// 显示错误（带拼写建议）
 		if execErr != nil {
 			fmt.Fprintf(s.stderr, "❌ 错误: %v\n", execErr)
+
+			// 如果是未知命令，提供拼写建议
+			if strings.Contains(execErr.Error(), "未知命令") {
+				if suggestion := s.suggester.SpellCheck(parsed.Command, s.registry.List()); suggestion != "" {
+					fmt.Fprintf(s.stderr, "💡 你是否想输入: %s\n", suggestion)
+				}
+			}
 		}
 
 		// 显示执行时间（如果超过 100ms）
