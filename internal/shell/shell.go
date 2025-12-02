@@ -15,18 +15,21 @@ import (
 	"github.com/Lingbou/Lish/internal/config"
 	"github.com/Lingbou/Lish/internal/history"
 	"github.com/Lingbou/Lish/internal/parser"
+	"github.com/Lingbou/Lish/internal/theme"
 	"github.com/chzyer/readline"
 )
 
 // Shell Lish Shell 结构
 type Shell struct {
-	registry  *commands.Registry
-	history   *history.Manager
-	config    *config.Config
-	suggester *Suggester
-	rl        *readline.Instance
-	stdout    *os.File
-	stderr    *os.File
+	registry        *commands.Registry
+	history         *history.Manager
+	config          *config.Config
+	suggester       *Suggester
+	themeManager    *theme.Manager
+	promptFormatter *PromptFormatter
+	rl              *readline.Instance
+	stdout          *os.File
+	stderr          *os.File
 }
 
 // NewShell 创建新的 Shell 实例
@@ -46,13 +49,25 @@ func NewShell() (*Shell, error) {
 		return nil, fmt.Errorf("创建历史管理器失败: %w", err)
 	}
 
+	// 创建主题管理器
+	themeManager := theme.NewManager(cfg.Theme.CustomThemesDir)
+	if err := themeManager.LoadTheme(cfg.Theme.Current); err != nil {
+		// 如果加载失败，使用默认主题
+		themeManager.LoadTheme("dark")
+	}
+
+	// 创建提示符格式化器
+	promptFormatter := NewPromptFormatter(cfg.Prompt.Format, themeManager.CurrentScheme())
+
 	return &Shell{
-		registry:  registry,
-		history:   histMgr,
-		config:    cfg,
-		suggester: NewSuggester(),
-		stdout:    os.Stdout,
-		stderr:    os.Stderr,
+		registry:        registry,
+		history:         histMgr,
+		config:          cfg,
+		suggester:       NewSuggester(),
+		themeManager:    themeManager,
+		promptFormatter: promptFormatter,
+		stdout:          os.Stdout,
+		stderr:          os.Stderr,
 	}, nil
 }
 
@@ -137,6 +152,9 @@ func (s *Shell) registerCommands() error {
 		// 压缩命令
 		commands.NewZipCommand(s.stdout),   // v0.4.0 新增
 		commands.NewUnzipCommand(s.stdout), // v0.4.0 新增
+
+		// 主题命令
+		commands.NewThemeCommand(s.themeManager), // v0.5.1 新增
 
 		commands.NewExitCommand(),
 		commands.NewHelpCommand(s.registry, s.stdout),
@@ -237,13 +255,17 @@ func (s *Shell) executeCommand(ctx context.Context, parsed *parser.ParsedCommand
 
 // getPrompt 生成提示符
 func (s *Shell) getPrompt() string {
-	// 获取用户名
+	// 使用提示符格式化器
+	if s.promptFormatter != nil {
+		return s.promptFormatter.Format()
+	}
+
+	// 备用方案：简单提示符
 	username := "user"
 	if u, err := user.Current(); err == nil {
 		username = u.Username
 	}
 
-	// 获取主机名
 	hostname := "localhost"
 	if h, err := os.Hostname(); err == nil {
 		hostname = h

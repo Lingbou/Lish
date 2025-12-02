@@ -14,6 +14,7 @@ type Config struct {
 	History HistoryConfig     `toml:"history"`
 	Aliases map[string]string `toml:"aliases"`
 	Colors  ColorsConfig      `toml:"colors"`
+	Theme   ThemeConfig       `toml:"theme"`
 }
 
 // PromptConfig 提示符配置
@@ -37,14 +38,21 @@ type ColorsConfig struct {
 	Prompt     string `toml:"prompt"`
 }
 
+// ThemeConfig 主题配置
+type ThemeConfig struct {
+	Current          string `toml:"current"`
+	CustomThemesDir  string `toml:"custom_themes_dir"`
+}
+
 // DefaultConfig 返回默认配置
 func DefaultConfig() *Config {
 	homeDir, _ := os.UserHomeDir()
 	histFile := filepath.Join(homeDir, ".lish_history")
+	themesDir := filepath.Join(homeDir, ".lish", "themes")
 
 	return &Config{
 		Prompt: PromptConfig{
-			Format:     "[{user}@{host} {pwd}]$ ",
+			Format:     "[{user}@{host} {cwd}]$ ",
 			ShowTime:   false,
 			ShowStatus: false,
 		},
@@ -58,6 +66,10 @@ func DefaultConfig() *Config {
 			Directory:  "blue",
 			Executable: "green",
 			Prompt:     "green",
+		},
+		Theme: ThemeConfig{
+			Current:         "dark",
+			CustomThemesDir: themesDir,
 		},
 	}
 }
