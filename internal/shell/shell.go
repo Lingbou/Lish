@@ -15,6 +15,7 @@ import (
 	"github.com/Lingbou/Lish/internal/config"
 	"github.com/Lingbou/Lish/internal/history"
 	"github.com/Lingbou/Lish/internal/parser"
+	"github.com/Lingbou/Lish/internal/script"
 	"github.com/Lingbou/Lish/internal/theme"
 	"github.com/chzyer/readline"
 )
@@ -27,6 +28,7 @@ type Shell struct {
 	suggester       *Suggester
 	themeManager    *theme.Manager
 	promptFormatter *PromptFormatter
+	scriptExecutor  *script.Executor
 	rl              *readline.Instance
 	stdout          *os.File
 	stderr          *os.File
@@ -59,7 +61,7 @@ func NewShell() (*Shell, error) {
 	// 创建提示符格式化器
 	promptFormatter := NewPromptFormatter(cfg.Prompt.Format, themeManager.CurrentScheme())
 
-	return &Shell{
+	shell := &Shell{
 		registry:        registry,
 		history:         histMgr,
 		config:          cfg,
@@ -68,7 +70,12 @@ func NewShell() (*Shell, error) {
 		promptFormatter: promptFormatter,
 		stdout:          os.Stdout,
 		stderr:          os.Stderr,
-	}, nil
+	}
+
+	// 创建脚本执行器（使用 shell 作为命令执行器）
+	shell.scriptExecutor = script.NewExecutor(shell)
+
+	return shell, nil
 }
 
 // Init 初始化 Shell（注册命令、设置 readline）
@@ -155,6 +162,10 @@ func (s *Shell) registerCommands() error {
 
 		// 主题命令
 		commands.NewThemeCommand(s.themeManager), // v0.5.1 新增
+
+		// 脚本命令
+		commands.NewSourceCommand(s.scriptExecutor), // v0.5.2 新增
+		commands.NewExecCommand(s),                  // v0.5.2 新增
 
 		commands.NewExitCommand(),
 		commands.NewHelpCommand(s.registry, s.stdout),
@@ -251,6 +262,15 @@ func (s *Shell) executeCommand(ctx context.Context, parsed *parser.ParsedCommand
 	}
 
 	return cmd.Execute(ctx, parsed.Args)
+}
+
+// ExecuteCommand 实现 script.CommandExecutor 接口
+func (s *Shell) ExecuteCommand(ctx context.Context, command string, args []string) error {
+	cmd, exists := s.registry.Get(command)
+	if !exists {
+		return fmt.Errorf("未知命令: %s", command)
+	}
+	return cmd.Execute(ctx, args)
 }
 
 // getPrompt 生成提示符
