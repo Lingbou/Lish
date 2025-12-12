@@ -167,6 +167,12 @@ func (s *Shell) registerCommands() error {
 		commands.NewSourceCommand(s.scriptExecutor), // v0.5.2 新增
 		commands.NewExecCommand(s),                  // v0.5.2 新增
 
+		// 高级文本命令
+		&commands.SortCommand{}, // v0.5.3 新增
+		&commands.UniqCommand{}, // v0.5.3 新增
+		&commands.SedCommand{},  // v0.5.3 新增
+		&commands.AwkCommand{},  // v0.5.3 新增
+
 		commands.NewExitCommand(),
 		commands.NewHelpCommand(s.registry, s.stdout),
 	}
