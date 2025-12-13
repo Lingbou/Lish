@@ -40,4 +40,3 @@ func (c *ClearCommand) Help() string {
 func (c *ClearCommand) ShortHelp() string {
 	return "清除屏幕"
 }
-

@@ -79,11 +79,11 @@ func getDiskInfoWindows(showAll bool) ([]DiskInfo, error) {
 		// 简化版：使用 os 包的基本功能获取磁盘信息
 		// 由于跨平台限制，这里提供基本的驱动器列表
 		// 实际空间信息在 Windows 上需要特殊 API
-		
+
 		// 尝试获取基本信息
 		totalBytes := uint64(0)
 		freeBytes := uint64(0)
-		
+
 		// 对于可访问的驱动器，尝试估算
 		if err == nil {
 			// 这里我们无法获取准确的磁盘空间信息
@@ -116,7 +116,7 @@ func getDiskInfoWindows(showAll bool) ([]DiskInfo, error) {
 // getWindowsDrives 获取 Windows 所有驱动器
 func getWindowsDrives() []string {
 	var drives []string
-	
+
 	// 检查 A-Z 驱动器
 	for drive := 'A'; drive <= 'Z'; drive++ {
 		drivePath := string(drive) + ":\\"
@@ -147,7 +147,7 @@ func getDiskInfoUnix(showAll bool) ([]DiskInfo, error) {
 
 		// 简单估算（实际应该使用 syscall.Statfs，但为了跨平台兼容性）
 		_ = info
-		
+
 		disks = append(disks, DiskInfo{
 			Filesystem: "filesystem",
 			Total:      0,
@@ -288,4 +288,3 @@ Windows 平台说明:
 func (c *DfCommand) ShortHelp() string {
 	return "显示磁盘空间使用情况"
 }
-

@@ -112,10 +112,10 @@ func executeSedScript(script string, lines []string, quiet bool) ([]string, erro
 
 // sedCommand sed命令结构
 type sedCommand struct {
-	action      string      // s, d, p, a, i
-	pattern     string      // 匹配模式
-	replacement string      // 替换字符串
-	flags       string      // g, i等标志
+	action      string // s, d, p, a, i
+	pattern     string // 匹配模式
+	replacement string // 替换字符串
+	flags       string // g, i等标志
 	regex       *regexp.Regexp
 }
 
@@ -274,4 +274,3 @@ func (c *SedCommand) Help() string {
 func (c *SedCommand) ShortHelp() string {
 	return "流编辑器（替换、删除等）"
 }
-

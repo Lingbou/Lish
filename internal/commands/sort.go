@@ -1,7 +1,6 @@
 package commands
 
 import (
-	"bufio"
 	"context"
 	"fmt"
 	"os"
@@ -71,12 +70,12 @@ func (c *SortCommand) Execute(ctx context.Context, args []string) error {
 		sort.Slice(lines, func(i, j int) bool {
 			fi := extractField(lines[i], *fieldNum, *separator)
 			fj := extractField(lines[j], *fieldNum, *separator)
-			
+
 			if *ignoreCase {
 				fi = strings.ToLower(fi)
 				fj = strings.ToLower(fj)
 			}
-			
+
 			if *reverse {
 				return fi > fj
 			}
@@ -87,12 +86,12 @@ func (c *SortCommand) Execute(ctx context.Context, args []string) error {
 		sort.Slice(lines, func(i, j int) bool {
 			li := lines[i]
 			lj := lines[j]
-			
+
 			if *ignoreCase {
 				li = strings.ToLower(li)
 				lj = strings.ToLower(lj)
 			}
-			
+
 			if *reverse {
 				return li > lj
 			}
@@ -164,32 +163,7 @@ func removeDuplicates(lines []string) []string {
 	return result
 }
 
-// readLines 从 Reader 读取所有行
-func readLines(file *os.File) ([]string, error) {
-	var lines []string
-	scanner := bufio.NewScanner(file)
-
-	for scanner.Scan() {
-		lines = append(lines, scanner.Text())
-	}
-
-	if err := scanner.Err(); err != nil {
-		return nil, err
-	}
-
-	return lines, nil
-}
-
-// readLinesFromFile 从文件读取所有行
-func readLinesFromFile(filename string) ([]string, error) {
-	file, err := os.Open(filename)
-	if err != nil {
-		return nil, err
-	}
-	defer file.Close()
-
-	return readLines(file)
-}
+// readLines 和 readLinesFromFile 已移至 utils.go
 
 func (c *SortCommand) Help() string {
 	return `sort - 排序文本行
@@ -223,4 +197,3 @@ func (c *SortCommand) Help() string {
 func (c *SortCommand) ShortHelp() string {
 	return "排序文本行"
 }
-

@@ -25,21 +25,21 @@ func (c *KillCommand) Execute(ctx context.Context, args []string) error {
 	if len(args) == 0 {
 		return fmt.Errorf("kill: 需要指定进程 ID")
 	}
-	
+
 	for _, arg := range args {
 		pid, err := strconv.Atoi(arg)
 		if err != nil {
 			fmt.Fprintf(os.Stderr, "kill: 无效的进程 ID: %s\n", arg)
 			continue
 		}
-		
+
 		if err := c.killProcess(pid); err != nil {
 			fmt.Fprintf(os.Stderr, "kill: %v\n", err)
 		} else {
 			fmt.Fprintf(c.stdout, "已终止进程 %d\n", pid)
 		}
 	}
-	
+
 	return nil
 }
 
@@ -49,13 +49,13 @@ func (c *KillCommand) killProcess(pid int) error {
 		cmd := exec.Command("taskkill", "/F", "/PID", strconv.Itoa(pid))
 		return cmd.Run()
 	}
-	
+
 	// Unix/Linux
 	process, err := os.FindProcess(pid)
 	if err != nil {
 		return fmt.Errorf("查找进程失败: %w", err)
 	}
-	
+
 	return process.Kill()
 }
 
@@ -78,4 +78,3 @@ func (c *KillCommand) Help() string {
 func (c *KillCommand) ShortHelp() string {
 	return "终止进程"
 }
-

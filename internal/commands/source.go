@@ -189,4 +189,3 @@ func (c *ExecCommand) Help() string {
 func (c *ExecCommand) ShortHelp() string {
 	return "在新环境执行脚本"
 }
-

@@ -149,4 +149,3 @@ func (c *UniqCommand) Help() string {
 func (c *UniqCommand) ShortHelp() string {
 	return "去除或报告重复行"
 }
-

@@ -21,9 +21,9 @@ func (c *TouchCommand) Execute(ctx context.Context, args []string) error {
 	if len(args) == 0 {
 		return fmt.Errorf("请指定至少一个文件名")
 	}
-	
+
 	now := time.Now()
-	
+
 	for _, filename := range args {
 		// 检查文件是否存在
 		_, err := os.Stat(filename)
@@ -44,7 +44,7 @@ func (c *TouchCommand) Execute(ctx context.Context, args []string) error {
 			return fmt.Errorf("访问文件 %s 失败: %w", filename, err)
 		}
 	}
-	
+
 	return nil
 }
 
@@ -66,4 +66,3 @@ func (c *TouchCommand) Help() string {
 func (c *TouchCommand) ShortHelp() string {
 	return "创建空文件或更新时间戳"
 }
-

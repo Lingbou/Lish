@@ -26,13 +26,13 @@ func (c *DateCommand) Execute(ctx context.Context, args []string) error {
 	format := flags.StringP("format", "f", "", "自定义格式")
 	iso := flags.Bool("iso", false, "ISO 8601 格式")
 	rfc := flags.Bool("rfc", false, "RFC 3339 格式")
-	
+
 	if err := flags.Parse(args); err != nil {
 		return err
 	}
-	
+
 	now := time.Now()
-	
+
 	// 根据选项选择格式
 	var output string
 	if *iso {
@@ -46,7 +46,7 @@ func (c *DateCommand) Execute(ctx context.Context, args []string) error {
 		// 默认格式
 		output = now.Format("2006-01-02 15:04:05 Monday")
 	}
-	
+
 	fmt.Fprintln(c.stdout, output)
 	return nil
 }
@@ -61,14 +61,14 @@ func (c *DateCommand) formatTime(t time.Time, format string) string {
 		"%M": "04",
 		"%S": "05",
 	}
-	
+
 	result := format
 	for placeholder, goFormat := range replacements {
 		if idx := findString(result, placeholder); idx >= 0 {
 			result = result[:idx] + goFormat + result[idx+len(placeholder):]
 		}
 	}
-	
+
 	return t.Format(result)
 }
 
@@ -105,4 +105,3 @@ func (c *DateCommand) Help() string {
 func (c *DateCommand) ShortHelp() string {
 	return "显示日期时间"
 }
-

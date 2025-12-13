@@ -23,12 +23,12 @@ func NewRegistry() *Registry {
 func (r *Registry) Register(cmd Command) error {
 	r.mu.Lock()
 	defer r.mu.Unlock()
-	
+
 	name := cmd.Name()
 	if _, exists := r.commands[name]; exists {
 		return fmt.Errorf("command %s already registered", name)
 	}
-	
+
 	r.commands[name] = cmd
 	return nil
 }
@@ -37,7 +37,7 @@ func (r *Registry) Register(cmd Command) error {
 func (r *Registry) Get(name string) (Command, bool) {
 	r.mu.RLock()
 	defer r.mu.RUnlock()
-	
+
 	cmd, exists := r.commands[name]
 	return cmd, exists
 }
@@ -46,12 +46,12 @@ func (r *Registry) Get(name string) (Command, bool) {
 func (r *Registry) List() []string {
 	r.mu.RLock()
 	defer r.mu.RUnlock()
-	
+
 	names := make([]string, 0, len(r.commands))
 	for name := range r.commands {
 		names = append(names, name)
 	}
-	
+
 	sort.Strings(names)
 	return names
 }
@@ -60,12 +60,11 @@ func (r *Registry) List() []string {
 func (r *Registry) GetAll() map[string]Command {
 	r.mu.RLock()
 	defer r.mu.RUnlock()
-	
+
 	result := make(map[string]Command, len(r.commands))
 	for name, cmd := range r.commands {
 		result[name] = cmd
 	}
-	
+
 	return result
 }
-

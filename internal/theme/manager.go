@@ -130,4 +130,3 @@ func (m *Manager) loadThemeFromFile(path string) (ColorScheme, error) {
 func (m *Manager) GetHighlighter() *Highlighter {
 	return NewHighlighter(m.currentScheme)
 }
-

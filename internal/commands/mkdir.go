@@ -21,16 +21,16 @@ func (c *MkdirCommand) Name() string {
 func (c *MkdirCommand) Execute(ctx context.Context, args []string) error {
 	flags := pflag.NewFlagSet("mkdir", pflag.ContinueOnError)
 	parents := flags.BoolP("parents", "p", false, "递归创建父目录")
-	
+
 	if err := flags.Parse(args); err != nil {
 		return err
 	}
-	
+
 	dirs := flags.Args()
 	if len(dirs) == 0 {
 		return fmt.Errorf("请指定至少一个目录名")
 	}
-	
+
 	for _, dir := range dirs {
 		var err error
 		if *parents {
@@ -38,12 +38,12 @@ func (c *MkdirCommand) Execute(ctx context.Context, args []string) error {
 		} else {
 			err = os.Mkdir(dir, 0755)
 		}
-		
+
 		if err != nil {
 			return fmt.Errorf("创建目录 %s 失败: %w", dir, err)
 		}
 	}
-	
+
 	return nil
 }
 
@@ -68,4 +68,3 @@ func (c *MkdirCommand) Help() string {
 func (c *MkdirCommand) ShortHelp() string {
 	return "创建目录"
 }
-

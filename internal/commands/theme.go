@@ -226,4 +226,3 @@ func removeCustomSuffix(name string) string {
 	}
 	return name
 }
-

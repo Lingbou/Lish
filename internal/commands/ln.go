@@ -176,4 +176,3 @@ Windows 平台说明:
 func (c *LnCommand) ShortHelp() string {
 	return "创建文件链接"
 }
-

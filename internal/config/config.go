@@ -40,8 +40,8 @@ type ColorsConfig struct {
 
 // ThemeConfig 主题配置
 type ThemeConfig struct {
-	Current          string `toml:"current"`
-	CustomThemesDir  string `toml:"custom_themes_dir"`
+	Current         string `toml:"current"`
+	CustomThemesDir string `toml:"custom_themes_dir"`
 }
 
 // DefaultConfig 返回默认配置

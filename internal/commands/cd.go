@@ -21,7 +21,7 @@ func (c *CdCommand) Name() string {
 
 func (c *CdCommand) Execute(ctx context.Context, args []string) error {
 	var targetDir string
-	
+
 	if len(args) == 0 {
 		// 无参数时，切换到用户目录
 		homeDir, err := os.UserHomeDir()
@@ -31,7 +31,7 @@ func (c *CdCommand) Execute(ctx context.Context, args []string) error {
 		targetDir = homeDir
 	} else {
 		arg := args[0]
-		
+
 		switch arg {
 		case "-":
 			// 切换到上次的目录
@@ -59,21 +59,21 @@ func (c *CdCommand) Execute(ctx context.Context, args []string) error {
 			}
 		}
 	}
-	
+
 	// 获取当前目录（用于保存）
 	currentDir, err := os.Getwd()
 	if err != nil {
 		return fmt.Errorf("获取当前目录失败: %w", err)
 	}
-	
+
 	// 切换目录
 	if err := os.Chdir(targetDir); err != nil {
 		return fmt.Errorf("切换目录失败: %w", err)
 	}
-	
+
 	// 保存上次的目录
 	c.lastDir = currentDir
-	
+
 	return nil
 }
 
@@ -104,4 +104,3 @@ func (c *CdCommand) Help() string {
 func (c *CdCommand) ShortHelp() string {
 	return "切换目录"
 }
-

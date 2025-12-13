@@ -23,9 +23,9 @@ func NewManager() (*Manager, error) {
 	if err != nil {
 		return nil, err
 	}
-	
+
 	historyFile := filepath.Join(homeDir, defaultHistoryFile)
-	
+
 	return &Manager{
 		historyFile: historyFile,
 		maxSize:     maxHistorySize,
@@ -46,9 +46,9 @@ func (m *Manager) Search(prefix string) (string, error) {
 		}
 		return "", err
 	}
-	
+
 	lines := strings.Split(string(content), "\n")
-	
+
 	// 从后往前搜索，找到最近的匹配
 	for i := len(lines) - 1; i >= 0; i-- {
 		line := strings.TrimSpace(lines[i])
@@ -56,7 +56,6 @@ func (m *Manager) Search(prefix string) (string, error) {
 			return line, nil
 		}
 	}
-	
+
 	return "", nil
 }
-
