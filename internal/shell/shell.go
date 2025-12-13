@@ -173,6 +173,12 @@ func (s *Shell) registerCommands() error {
 		&commands.SedCommand{},  // v0.5.3 新增
 		&commands.AwkCommand{},  // v0.5.3 新增
 
+		// 系统工具命令
+		&commands.ChmodCommand{}, // v0.5.4 新增
+		&commands.ChownCommand{}, // v0.5.4 新增
+		&commands.LnCommand{},    // v0.5.4 新增
+		&commands.DfCommand{},    // v0.5.4 新增
+
 		commands.NewExitCommand(),
 		commands.NewHelpCommand(s.registry, s.stdout),
 	}
