@@ -27,39 +27,39 @@ func (c *WcCommand) Execute(ctx context.Context, args []string) error {
 	countLines := flags.BoolP("lines", "l", false, "只统计行数")
 	countWords := flags.BoolP("words", "w", false, "只统计单词数")
 	countBytes := flags.BoolP("bytes", "c", false, "只统计字节数")
-	
+
 	if err := flags.Parse(args); err != nil {
 		return err
 	}
-	
+
 	files := flags.Args()
 	if len(files) == 0 {
 		return fmt.Errorf("wc: 需要指定文件")
 	}
-	
+
 	// 如果没有指定选项，显示所有统计
 	showAll := !*countLines && !*countWords && !*countBytes
-	
+
 	var totalLines, totalWords, totalBytes int64
-	
+
 	for _, filename := range files {
 		lines, words, bytes, err := c.countFile(filename)
 		if err != nil {
 			return err
 		}
-		
+
 		c.printStats(filename, lines, words, bytes, showAll, *countLines, *countWords, *countBytes)
-		
+
 		totalLines += lines
 		totalWords += words
 		totalBytes += bytes
 	}
-	
+
 	// 如果有多个文件，显示总计
 	if len(files) > 1 {
 		c.printStats("total", totalLines, totalWords, totalBytes, showAll, *countLines, *countWords, *countBytes)
 	}
-	
+
 	return nil
 }
 
@@ -69,24 +69,24 @@ func (c *WcCommand) countFile(filename string) (lines, words, bytes int64, err e
 		return 0, 0, 0, fmt.Errorf("打开文件失败: %w", err)
 	}
 	defer file.Close()
-	
+
 	scanner := bufio.NewScanner(file)
 	for scanner.Scan() {
 		line := scanner.Text()
 		lines++
 		bytes += int64(len(line)) + 1 // +1 for newline
-		
+
 		// 统计单词数
 		fields := strings.Fields(line)
 		words += int64(len(fields))
 	}
-	
+
 	return lines, words, bytes, scanner.Err()
 }
 
 func (c *WcCommand) printStats(name string, lines, words, bytes int64, showAll, showLines, showWords, showBytes bool) {
 	var output string
-	
+
 	if showAll || showLines {
 		output += fmt.Sprintf("%8d", lines)
 	}
@@ -96,7 +96,7 @@ func (c *WcCommand) printStats(name string, lines, words, bytes int64, showAll, 
 	if showAll || showBytes {
 		output += fmt.Sprintf("%8d", bytes)
 	}
-	
+
 	output += fmt.Sprintf(" %s\n", name)
 	fmt.Fprint(c.stdout, output)
 }
@@ -126,4 +126,3 @@ func (c *WcCommand) Help() string {
 func (c *WcCommand) ShortHelp() string {
 	return "统计文件行数/字数"
 }
-

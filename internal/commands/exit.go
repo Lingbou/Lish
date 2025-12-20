@@ -22,14 +22,14 @@ func (c *ExitCommand) Name() string {
 
 func (c *ExitCommand) Execute(ctx context.Context, args []string) error {
 	exitCode := 0
-	
+
 	if len(args) > 0 {
 		code, err := strconv.Atoi(args[0])
 		if err == nil {
 			exitCode = code
 		}
 	}
-	
+
 	c.exitFunc(exitCode)
 	return nil
 }
@@ -54,4 +54,3 @@ func (c *ExitCommand) Help() string {
 func (c *ExitCommand) ShortHelp() string {
 	return "退出 Shell"
 }
-

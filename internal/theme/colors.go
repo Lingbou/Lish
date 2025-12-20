@@ -8,11 +8,11 @@ import (
 
 // ANSI 颜色码常量
 const (
-	ResetCode      = "\033[0m"
-	BoldCode       = "\033[1m"
-	DimCode        = "\033[2m"
-	ItalicCode     = "\033[3m"
-	UnderlineCode  = "\033[4m"
+	ResetCode     = "\033[0m"
+	BoldCode      = "\033[1m"
+	DimCode       = "\033[2m"
+	ItalicCode    = "\033[3m"
+	UnderlineCode = "\033[4m"
 )
 
 // Color 表示一个颜色配置
@@ -25,31 +25,31 @@ type Color struct {
 // ColorScheme 定义主题的颜色方案接口
 type ColorScheme interface {
 	// 基础颜色
-	Primary() Color      // 主要颜色（命令名）
-	Secondary() Color    // 次要颜色（参数）
-	Success() Color      // 成功（绿色）
-	Warning() Color      // 警告（黄色）
-	Error() Color        // 错误（红色）
-	Info() Color         // 信息（蓝色）
+	Primary() Color   // 主要颜色（命令名）
+	Secondary() Color // 次要颜色（参数）
+	Success() Color   // 成功（绿色）
+	Warning() Color   // 警告（黄色）
+	Error() Color     // 错误（红色）
+	Info() Color      // 信息（蓝色）
 
 	// 文件类型颜色
-	Directory() Color    // 目录
-	Executable() Color   // 可执行文件
-	Symlink() Color      // 符号链接
-	Archive() Color      // 压缩包
+	Directory() Color  // 目录
+	Executable() Color // 可执行文件
+	Symlink() Color    // 符号链接
+	Archive() Color    // 压缩包
 
 	// 提示符颜色
-	PromptUser() Color   // 用户名
-	PromptHost() Color   // 主机名
-	PromptPath() Color   // 路径
-	PromptGit() Color    // Git 分支
+	PromptUser() Color // 用户名
+	PromptHost() Color // 主机名
+	PromptPath() Color // 路径
+	PromptGit() Color  // Git 分支
 
 	// 语法高亮
-	SyntaxCommand() Color    // 命令
-	SyntaxArgument() Color   // 参数
-	SyntaxString() Color     // 字符串
-	SyntaxVariable() Color   // 变量
-	SyntaxOperator() Color   // 操作符 (|, >, <)
+	SyntaxCommand() Color  // 命令
+	SyntaxArgument() Color // 参数
+	SyntaxString() Color   // 字符串
+	SyntaxVariable() Color // 变量
+	SyntaxOperator() Color // 操作符 (|, >, <)
 }
 
 // Theme 表示一个完整主题
@@ -119,12 +119,12 @@ func (c Color) Apply(text string) string {
 // hexToRGB 将 hex 颜色转换为 RGB 值
 func hexToRGB(hex string) (r, g, b int) {
 	hex = strings.TrimPrefix(hex, "#")
-	
+
 	if len(hex) == 3 {
 		// 短格式 #RGB -> #RRGGBB
 		hex = string([]byte{hex[0], hex[0], hex[1], hex[1], hex[2], hex[2]})
 	}
-	
+
 	if len(hex) != 6 {
 		return 0, 0, 0
 	}
@@ -152,4 +152,3 @@ func NewColorWithBg(fg, bg string, styles ...string) Color {
 		Style:      styles,
 	}
 }
-

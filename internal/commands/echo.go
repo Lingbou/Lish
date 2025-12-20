@@ -25,10 +25,10 @@ func (c *EchoCommand) Execute(ctx context.Context, args []string) error {
 	for _, arg := range args {
 		expanded = append(expanded, os.ExpandEnv(arg))
 	}
-	
+
 	output := strings.Join(expanded, " ")
 	fmt.Fprintln(c.stdout, output)
-	
+
 	return nil
 }
 
@@ -53,4 +53,3 @@ func (c *EchoCommand) Help() string {
 func (c *EchoCommand) ShortHelp() string {
 	return "输出文本"
 }
-

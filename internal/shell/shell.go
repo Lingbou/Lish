@@ -346,7 +346,6 @@ func (s *Shell) printWelcome() {
 ╩═╝╩╚═╝╩ ╩  Linux-style Shell
 
 欢迎使用 Lish！轻量级 Linux 风格终端。
-输入 'help' 查看可用命令，输入 'exit' 退出。
-`
+输入 'help' 查看可用命令，输入 'exit' 退出。`
 	fmt.Fprintln(s.stdout, banner)
 }

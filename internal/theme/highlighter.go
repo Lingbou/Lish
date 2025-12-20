@@ -68,11 +68,11 @@ func (h *Highlighter) HighlightFile(name string, isDir, isExec, isLink bool) str
 
 	// 根据扩展名判断
 	lowerName := strings.ToLower(name)
-	if strings.HasSuffix(lowerName, ".zip") || 
-	   strings.HasSuffix(lowerName, ".tar") || 
-	   strings.HasSuffix(lowerName, ".gz") || 
-	   strings.HasSuffix(lowerName, ".7z") || 
-	   strings.HasSuffix(lowerName, ".rar") {
+	if strings.HasSuffix(lowerName, ".zip") ||
+		strings.HasSuffix(lowerName, ".tar") ||
+		strings.HasSuffix(lowerName, ".gz") ||
+		strings.HasSuffix(lowerName, ".7z") ||
+		strings.HasSuffix(lowerName, ".rar") {
 		return h.scheme.Archive().Apply(name)
 	}
 
@@ -83,4 +83,3 @@ func (h *Highlighter) HighlightFile(name string, isDir, isExec, isLink bool) str
 func (h *Highlighter) UpdateScheme(scheme ColorScheme) {
 	h.scheme = scheme
 }
-
