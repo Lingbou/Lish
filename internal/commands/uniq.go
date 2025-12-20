@@ -77,7 +77,7 @@ func processLines(lines []string, showCount, showRepeated, showUnique, ignoreCas
 	// 比较函数
 	compare := func(a, b string) bool {
 		if ignoreCase {
-			return strings.ToLower(a) == strings.ToLower(b)
+			return strings.EqualFold(a, b)
 		}
 		return a == b
 	}
