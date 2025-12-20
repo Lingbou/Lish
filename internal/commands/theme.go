@@ -174,7 +174,7 @@ func (c *ThemeCommand) setTheme(name string) error {
 
 	fmt.Printf("✓ 主题已切换为: %s\n", name)
 	fmt.Println("\n提示: 重启 shell 以应用新的提示符颜色")
-	fmt.Println("      或使用 'theme show %s' 查看效果", name)
+	fmt.Printf("      或使用 'theme show %s' 查看效果\n", name)
 
 	return nil
 }
